@@ -23,7 +23,7 @@ public class UserController {
         return users;
     }
 
-    @PostMapping(value = "/user")
+    @PostMapping(value = "/users")
     public boolean create(@RequestBody User user) {
         try {
             userValidation(user);
@@ -36,18 +36,15 @@ public class UserController {
         return true;
     }
 
-    @PutMapping("/user")
+    @PutMapping("/users")
     public boolean update(@RequestBody User user) {
         try {
-            //System.out.println("FLAG-- no exp-- ");
             userValidation(user);
         } catch (ValidationException e) {
-            System.out.println("FLAG-- exp-- ");
             log.info(e.getMessage());
             return false;
         }
         for (User u : users){
-            System.out.println("FLAG-- upd-- ");
             if (u.getId() == user.getId()){
                 u.setName(u.getName());
                 u.setEmail(user.getEmail());
