@@ -11,26 +11,35 @@ import java.util.List;
 
 @RestController
 public class UserController {
-    private static final Logger post_log = LoggerFactory.getLogger(UserController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final List<User> users = new ArrayList<>();
 
     @GetMapping("/users")
     public List<User> findAll() {
-        post_log.debug("Текущее количество фильмов: {}", users.size());
+        log.info("Current user amount is {}", users.size());
         return users;
     }
 
     @PostMapping(value = "/user")
-    public User create(@RequestBody User user) throws ValidationException {
-        userValidation(user);
+    public User create(@RequestBody User user) {
+        try {
+            userValidation(user);
+        } catch (ValidationException e) {
+            log.info(e.getMessage());
+        }
         users.add(user);
+        log.info("User has been created, ID: {}", user.getId());
         return user;
     }
 
     @PutMapping("/user")
-    public User update(@RequestBody User user) throws ValidationException {
-        userValidation(user);
+    public User update(@RequestBody User user) {
+        try {
+            userValidation(user);
+        } catch (ValidationException e) {
+            log.info(e.getMessage());
+        }
         for (User u : users){
             if (u.getId() == user.getId()){
                 u.setName(u.getName());
@@ -39,6 +48,7 @@ public class UserController {
                 u.setDate(user.getDate());
             }
         }
+        log.info("User has been updated, ID: {}", user.getId());
         return user;
     }
 

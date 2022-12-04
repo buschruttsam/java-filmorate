@@ -7,31 +7,39 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RestController
 public class FilmController {
-    private static final Logger post_log = LoggerFactory.getLogger(FilmController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final List<Film> films = new ArrayList<>();
 
     @GetMapping("/films")
     public List<Film> findAll() {
-        post_log.debug("Текущее количество фильмов: {}", films.size());
+        log.debug("Current film amount is {}", films.size());
         return films;
     }
 
     @PostMapping(value = "/film")
-    public Film create(@RequestBody Film film) throws ValidationException {
-        filmValidation (film);
+    public Film create(@RequestBody Film film){
+        try {
+            filmValidation(film);
+        } catch (ValidationException e) {
+            log.info(e.getMessage());
+        }
         films.add(film);
+        log.info("Film has been created, ID: {}", film.getId());
         return film;
     }
 
     @PutMapping("/film")
-    public Film update(@RequestBody Film film) throws ValidationException {
-        filmValidation (film);
+    public Film update(@RequestBody Film film){
+        try {
+            filmValidation(film);
+        } catch (ValidationException e) {
+            log.info(e.getMessage());
+        }
         for (Film f : films){
             if (f.getId() == film.getId()){
                 f.setName(film.getName());
@@ -40,6 +48,7 @@ public class FilmController {
                 f.setReleaseDate(film.getReleaseDate());
             }
         }
+        log.info("Film has been updated, ID: {}", film.getId());
         return film;
     }
 
