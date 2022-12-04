@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.Data;
 import org.slf4j.*;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Data
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
@@ -22,25 +24,30 @@ public class UserController {
     }
 
     @PostMapping(value = "/user")
-    public User create(@RequestBody User user) {
+    public boolean create(@RequestBody User user) {
         try {
             userValidation(user);
         } catch (ValidationException e) {
             log.info(e.getMessage());
+            return false;
         }
         users.add(user);
         log.info("User has been created, ID: {}", user.getId());
-        return user;
+        return true;
     }
 
     @PutMapping("/user")
-    public User update(@RequestBody User user) {
+    public boolean update(@RequestBody User user) {
         try {
+            //System.out.println("FLAG-- no exp-- ");
             userValidation(user);
         } catch (ValidationException e) {
+            System.out.println("FLAG-- exp-- ");
             log.info(e.getMessage());
+            return false;
         }
         for (User u : users){
+            System.out.println("FLAG-- upd-- ");
             if (u.getId() == user.getId()){
                 u.setName(u.getName());
                 u.setEmail(user.getEmail());
@@ -49,8 +56,10 @@ public class UserController {
             }
         }
         log.info("User has been updated, ID: {}", user.getId());
-        return user;
+        return true;
     }
+
+    // %%%%%%%%%% %%%%%%%%%% additional methods %%%%%%%%%% %%%%%%%%%%
 
     private void userValidation(User user) throws ValidationException {
         if (user.getEmail().isEmpty() || !user.getEmail().contains("@")) {

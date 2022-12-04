@@ -22,23 +22,25 @@ public class FilmController {
     }
 
     @PostMapping(value = "/film")
-    public Film create(@RequestBody Film film){
+    public boolean create(@RequestBody Film film){
         try {
             filmValidation(film);
         } catch (ValidationException e) {
             log.info(e.getMessage());
+            return false;
         }
         films.add(film);
         log.info("Film has been created, ID: {}", film.getId());
-        return film;
+        return true;
     }
 
     @PutMapping("/film")
-    public Film update(@RequestBody Film film){
+    public boolean update(@RequestBody Film film){
         try {
             filmValidation(film);
         } catch (ValidationException e) {
             log.info(e.getMessage());
+            return false;
         }
         for (Film f : films){
             if (f.getId() == film.getId()){
@@ -49,7 +51,7 @@ public class FilmController {
             }
         }
         log.info("Film has been updated, ID: {}", film.getId());
-        return film;
+        return true;
     }
 
     private void filmValidation(Film film) throws ValidationException {
