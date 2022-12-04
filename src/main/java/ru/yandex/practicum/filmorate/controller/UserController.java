@@ -25,6 +25,7 @@ public class UserController {
 
     @PostMapping(value = "/users")
     public boolean create(@RequestBody User user) {
+        System.out.println("FLAG-- Post Users-- ");
         try {
             userValidation(user);
         } catch (ValidationException e) {
@@ -49,7 +50,7 @@ public class UserController {
                 u.setName(u.getName());
                 u.setEmail(user.getEmail());
                 u.setLogin(user.getLogin());
-                u.setDate(user.getDate());
+                u.setBirthday(user.getBirthday());
             }
         }
         log.info("User has been updated, ID: {}", user.getId());
@@ -65,7 +66,7 @@ public class UserController {
         if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
             throw new ValidationException("User login is empty or has empty symbols");
         }
-        if (user.getDate().isAfter(LocalDate.now())){
+        if (user.getBirthday().isAfter(LocalDate.now())){
             throw new ValidationException("User birth date is in future");
         }
 
