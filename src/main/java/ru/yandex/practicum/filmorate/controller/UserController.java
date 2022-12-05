@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@Data
 public class UserController {
     private int USER_ID = 0;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -56,16 +55,12 @@ public class UserController {
     // %%%%%%%%%% %%%%%%%%%% additional methods %%%%%%%%%% %%%%%%%%%%
 
     private void userValidation(User user) throws ValidationException {
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
-            throw new ValidationException("User email is empty or has no @");
-        }
-        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
+        if (user.getLogin().contains(" ")) {
             throw new ValidationException("User login is empty or has empty symbols");
         }
         if (user.getBirthday().isAfter(LocalDate.now())){
             throw new ValidationException("User birth date is in future");
         }
-
     }
 
     private int getLastUserId() {

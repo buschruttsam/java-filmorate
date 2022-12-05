@@ -45,7 +45,7 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>

@@ -33,12 +33,12 @@ class FilmorateApplicationTests {
 		user_2.setLogin("user_2");
 		user_2.setBirthday(LocalDate.now());
 		UserController userController = new UserController();
-		Assertions.assertTrue(userController.getUsers().isEmpty());
+		Assertions.assertTrue(userController.findAll().isEmpty());
 		userController.create(user_1);
 		userController.create(user_2);
-		Assertions.assertEquals(userController.getUsers().size(), 2);
-		Assertions.assertEquals(userController.getUsers().get(0).getName(), "User_name_1");
-		Assertions.assertEquals(userController.getUsers().get(1).getEmail(), "test2@domain_never_used.ru");
+		Assertions.assertEquals(userController.findAll().size(), 2);
+		Assertions.assertEquals(userController.findAll().get(0).getName(), "User_name_1");
+		Assertions.assertEquals(userController.findAll().get(1).getEmail(), "test2@domain_never_used.ru");
 	}
 
 	@Test
@@ -49,9 +49,9 @@ class FilmorateApplicationTests {
 		user_1.setLogin("user_1");
 		user_1.setBirthday(LocalDate.now());
 		UserController userController = new UserController();
-		Assertions.assertTrue(userController.getUsers().isEmpty());
+		Assertions.assertTrue(userController.findAll().isEmpty());
 		userController.create(user_1);
-		Assertions.assertEquals(userController.getUsers().get(0).getEmail(), "test1@domain_never_used.ru");
+		Assertions.assertEquals(userController.findAll().get(0).getEmail(), "test1@domain_never_used.ru");
 		User user_1_upd = new User();
 		user_1_upd.setId(1);
 		user_1_upd.setName("User_name_1");
@@ -59,7 +59,7 @@ class FilmorateApplicationTests {
 		user_1_upd.setLogin("user_1");
 		user_1_upd.setBirthday(LocalDate.now());
 		userController.update(user_1_upd);
-		Assertions.assertEquals(userController.getUsers().get(0).getEmail(), "new_test1@domain_never_used.ru");
+		Assertions.assertEquals(userController.findAll().get(0).getEmail(), "new_test1@domain_never_used.ru");
 	}
 
 	@Test
@@ -81,16 +81,16 @@ class FilmorateApplicationTests {
 		user_1.setLogin("user_1");
 		user_1.setBirthday(LocalDate.now());
 		UserController userController = new UserController();
-		Assertions.assertTrue(userController.getUsers().isEmpty());
+		Assertions.assertTrue(userController.findAll().isEmpty());
 		userController.create(user_1);
-		Assertions.assertEquals(userController.getUsers().get(0).getLogin(), "user_1");
+		Assertions.assertEquals(userController.findAll().get(0).getLogin(), "user_1");
 		User user_1_upd = new User();
 		user_1_upd.setName("");
 		user_1_upd.setEmail("test1@domain_never_used.ru");
 		user_1_upd.setLogin("user_1");
 		user_1_upd.setBirthday(LocalDate.now());
 		userController.update(user_1);
-		Assertions.assertEquals(userController.getUsers().get(0).getLogin(), "user_1");
+		Assertions.assertEquals(userController.findAll().get(0).getLogin(), "user_1");
 	}
 
 	@Test
