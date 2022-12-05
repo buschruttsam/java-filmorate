@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 public class FilmController {
-    private static int FILM_ID = 0;
+    private int FILM_ID = 0;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final List<Film> films = new ArrayList<>();

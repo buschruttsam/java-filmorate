@@ -14,7 +14,7 @@ import java.util.Objects;
 @RestController
 @Data
 public class UserController {
-    private static int USER_ID = 0;
+    private int USER_ID = 0;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final List<User> users = new ArrayList<>();
