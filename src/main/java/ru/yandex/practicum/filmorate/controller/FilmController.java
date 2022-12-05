@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 public class FilmController {
+    private static int FILM_ID = 0;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final List<Film> films = new ArrayList<>();
@@ -21,26 +22,22 @@ public class FilmController {
         return films;
     }
 
-    @PostMapping(value = "/film")
-    public boolean create(@RequestBody Film film){
-        try {
-            filmValidation(film);
-        } catch (ValidationException e) {
-            log.info(e.getMessage());
-            return false;
-        }
+    @PostMapping(value = "/films")
+    public Film create(@RequestBody Film film) throws ValidationException {
+        film.setId(getLastFilmId());
+        filmValidation(film);
         films.add(film);
         log.info("Film has been created, ID: {}", film.getId());
-        return true;
+        return film;
     }
 
-    @PutMapping("/film")
-    public boolean update(@RequestBody Film film){
+    @PutMapping(value = "/films")
+    public Film update(@RequestBody Film film){
         try {
             filmValidation(film);
         } catch (ValidationException e) {
             log.info(e.getMessage());
-            return false;
+            return film;
         }
         for (Film f : films){
             if (f.getId() == film.getId()){
@@ -51,11 +48,11 @@ public class FilmController {
             }
         }
         log.info("Film has been updated, ID: {}", film.getId());
-        return true;
+        return film;
     }
 
     private void filmValidation(Film film) throws ValidationException {
-        if (film.getName().isEmpty() || film.getName().length() > 200) {
+        if (film.getName() == null || film.getName().isEmpty() || film.getName().length() > 200) {
             throw new ValidationException("Film name is empty or length has over 200 symbols");
         }
         if (film.getDuration().toMinutes() <= 0) {
@@ -64,6 +61,11 @@ public class FilmController {
         if (film.getReleaseDate().isBefore(LocalDate.of(1995, 12, 28))){
             throw new ValidationException("Film release date is before Dec 28, 1995");
         }
+    }
+
+    private int getLastFilmId() {
+        FILM_ID += 1;
+        return FILM_ID;
     }
 
 }

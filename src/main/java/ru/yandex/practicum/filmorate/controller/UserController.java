@@ -9,10 +9,12 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Data
 public class UserController {
+    private static int USER_ID = 0;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final List<User> users = new ArrayList<>();
@@ -24,37 +26,31 @@ public class UserController {
     }
 
     @PostMapping(value = "/users")
-    public boolean create(@RequestBody User user) {
-        System.out.println("FLAG-- Post Users-- ");
-        try {
-            userValidation(user);
-        } catch (ValidationException e) {
-            log.info(e.getMessage());
-            return false;
-        }
+    public User create(@RequestBody User user) throws ValidationException {
+        if (user.getName() == null || Objects.equals(user.getName(), "")){user.setName(user.getLogin());}
+        userValidation(user);
+        user.setId(getLastUserId());
         users.add(user);
         log.info("User has been created, ID: {}", user.getId());
-        return true;
+        return user;
     }
 
-    @PutMapping("/users")
-    public boolean update(@RequestBody User user) {
-        try {
-            userValidation(user);
-        } catch (ValidationException e) {
-            log.info(e.getMessage());
-            return false;
-        }
+    @PutMapping(value = "/users")
+    public User update(@RequestBody User user) throws ValidationException {
+        if (user.getName() == null || Objects.equals(user.getName(), "")){user.setName(user.getLogin());}
+        userValidation(user);
         for (User u : users){
             if (u.getId() == user.getId()){
-                u.setName(u.getName());
+                u.setName(user.getName());
                 u.setEmail(user.getEmail());
                 u.setLogin(user.getLogin());
                 u.setBirthday(user.getBirthday());
+                log.info("User has been updated, ID: {}", u.getId());
+                return user;
             }
         }
-        log.info("User has been updated, ID: {}", user.getId());
-        return true;
+        log.info("No user found, ID: {}", user.getId());
+        throw new ValidationException("User id not found");
     }
 
     // %%%%%%%%%% %%%%%%%%%% additional methods %%%%%%%%%% %%%%%%%%%%
@@ -70,6 +66,11 @@ public class UserController {
             throw new ValidationException("User birth date is in future");
         }
 
+    }
+
+    private int getLastUserId() {
+        USER_ID += 1;
+        return USER_ID;
     }
 
 }
