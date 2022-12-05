@@ -24,15 +24,15 @@ public class FilmController {
 
     @PostMapping(value = "/films")
     public Film create(@RequestBody Film film) throws ValidationException {
-        film.setId(getLastFilmId());
         filmValidation(film);
+        film.setId(getLastFilmId());
         films.add(film);
         log.info("Film has been created, ID: {}", film.getId());
         return film;
     }
 
     @PutMapping(value = "/films")
-    public Film update(@RequestBody Film film){
+    public Film update(@RequestBody Film film) throws ValidationException {
         try {
             filmValidation(film);
         } catch (ValidationException e) {
@@ -45,20 +45,24 @@ public class FilmController {
                 f.setDescription(film.getDescription());
                 f.setDuration(film.getDuration());
                 f.setReleaseDate(film.getReleaseDate());
+                log.info("Film has been updated, ID: {}", film.getId());
+                return film;
             }
         }
-        log.info("Film has been updated, ID: {}", film.getId());
-        return film;
+        log.info("No film found, ID: {}", film.getId());
+        throw new ValidationException("Film id not found");
     }
 
+    // %%%%%%%%%% %%%%%%%%%% additional methods %%%%%%%%%% %%%%%%%%%%
+
     private void filmValidation(Film film) throws ValidationException {
-        if (film.getName() == null || film.getName().isEmpty() || film.getName().length() > 200) {
+        if (film.getName() == null || film.getName().isEmpty() || film.getDescription().length() > 200) {
             throw new ValidationException("Film name is empty or length has over 200 symbols");
         }
-        if (film.getDuration().toMinutes() <= 0) {
+        if (film.getDuration() <= 0) {
             throw new ValidationException("Film duration has zero or negative duration");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1995, 12, 28))){
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))){
             throw new ValidationException("Film release date is before Dec 28, 1995");
         }
     }
