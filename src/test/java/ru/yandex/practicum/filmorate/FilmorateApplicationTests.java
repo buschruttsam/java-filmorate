@@ -63,17 +63,6 @@ class FilmorateApplicationTests {
 	}
 
 	@Test
-	void crateInvalidEmailUserTest() {
-		User user_no_valid_1 = new User();
-		user_no_valid_1.setName("User_no_valid_name_1");
-		user_no_valid_1.setEmail("no_valid_email.ru");
-		user_no_valid_1.setLogin("user_1");
-		user_no_valid_1.setBirthday(LocalDate.now());
-		UserController userController = new UserController();
-		assertThrows(ValidationException.class,() -> userController.create(user_no_valid_1));
-	}
-
-	@Test
 	void updateInvalidLoginUserTest() throws ValidationException {
 		User user_1 = new User();
 		user_1.setName("User_name_1");

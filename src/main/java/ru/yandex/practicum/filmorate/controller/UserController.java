@@ -55,9 +55,6 @@ public class UserController {
     // %%%%%%%%%% %%%%%%%%%% additional methods %%%%%%%%%% %%%%%%%%%%
 
     private void userValidation(User user) throws ValidationException {
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
-            throw new ValidationException("User email is empty or has no @");
-        }
         if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
             throw new ValidationException("User login is empty or has empty symbols");
         }
