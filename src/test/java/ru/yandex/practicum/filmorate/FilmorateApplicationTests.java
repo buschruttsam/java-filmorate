@@ -70,7 +70,7 @@ class FilmorateApplicationTests {
 		user_no_valid_1.setLogin("user_1");
 		user_no_valid_1.setBirthday(LocalDate.now());
 		UserController userController = new UserController();
-		//assertThrows(ValidationException.class,() -> userController.create(user_no_valid_1));
+		assertThrows(ValidationException.class,() -> userController.create(user_no_valid_1));
 	}
 
 	@Test
