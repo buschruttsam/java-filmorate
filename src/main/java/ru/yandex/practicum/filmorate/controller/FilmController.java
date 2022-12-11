@@ -12,12 +12,9 @@ import java.util.List;
 public class FilmController {
 
     private final InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-
 
     @GetMapping("/films")
     public List<Film> findAll() {
-        log.debug("Current film amount is {}", filmStorage.getFilms().size());
         return filmStorage.getFilms();
     }
 
