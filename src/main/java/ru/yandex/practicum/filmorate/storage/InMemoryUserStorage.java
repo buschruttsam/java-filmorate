@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import javafx.util.*;
+import kotlin.Pair;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -11,25 +12,14 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.*;
 
+@Data
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private int USER_ID = 0;
-    Set<Integer> userIds;
+    Set<Integer> userIds = new HashSet<>();
     Set<Pair<Integer, Integer>> friendPairs;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final List<User> users = new ArrayList<>();
-
-    public Set<Pair<Integer, Integer>> getFriendPairs() {
-        return friendPairs;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public Set<Integer> getUserIds() {
-        return userIds;
-    }
 
     public List<User> findAll() {
         log.info("Current user amount is {}", users.size());
@@ -37,14 +27,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public User create(User user) throws ValidationException {
-        System.out.println("FLAG-- ");
+
         if (user.getName() == null || Objects.equals(user.getName(), "")){user.setName(user.getLogin());}
         userValidation(user);
         int userId = getLastUserId();
         user.setId(userId);
         users.add(user);
         userIds.add(userId);
-        //log.info("User has been created, ID: {}", user.getId());
+        log.info("User has been created, ID: {}", user.getId());
         return user;
     }
 

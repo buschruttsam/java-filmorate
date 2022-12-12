@@ -1,12 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import javafx.util.Pair;
-import org.springframework.cglib.beans.FixedKeySet;
+import kotlin.Pair;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,10 +12,13 @@ import java.util.stream.Collectors;
 public class UserService {
 
 
-    public Optional<User> findById(int userId, List<User> users) {
-        return users.stream()
-                .filter(x -> x.getId() == userId)
-                .findFirst();
+    public User findById(int userId, List<User> users) {
+        Optional<User> optUser = users.stream().filter(x -> x.getId() == userId).findFirst();
+        if (optUser.isPresent()){
+            return optUser.get();
+        } else {
+            throw new UserNotFoundException("findById user not found");
+        }
     }
 
     public boolean addFriend (int id, int friendId, Set<Pair<Integer, Integer>> friendPairs, Set<Integer> userIds) {
@@ -45,8 +45,8 @@ public class UserService {
         List<User> userFriends = new ArrayList<>();
         Set<Integer> friendIds = new HashSet<>();
         for (Pair<Integer, Integer> friendPair : friendPairs){
-            if (friendPair.getKey() == id){
-                friendIds.add(friendPair.getValue());
+            if (friendPair.getFirst() == id){
+                friendIds.add(friendPair.getSecond());
             }
         }
         for (int retainId : friendIds){
@@ -61,11 +61,11 @@ public class UserService {
         Set<Integer> otherFriendIds = new HashSet<>();
         Set<Integer> commonFriendIds = new HashSet<>();
         for (Pair<Integer, Integer> friendPair : friendPairs){
-            if (friendPair.getKey() == id){
-                userFriendIds.add(friendPair.getValue());
+            if (friendPair.getFirst() == id){
+                userFriendIds.add(friendPair.getSecond());
             }
-            if (friendPair.getKey() == friendId){
-                otherFriendIds.add(friendPair.getValue());
+            if (friendPair.getFirst() == friendId){
+                otherFriendIds.add(friendPair.getSecond());
             }
         }
         commonFriendIds = userFriendIds.stream().distinct().filter(otherFriendIds::contains).collect(Collectors.toSet());
