@@ -3,7 +3,6 @@ import lombok.*;
 
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 public class User {
@@ -13,5 +12,4 @@ public class User {
     @Email
     private String email;
     private LocalDate birthday;
-    private Set<Integer> friendIds;
 }

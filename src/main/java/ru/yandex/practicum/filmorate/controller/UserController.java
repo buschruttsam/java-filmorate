@@ -42,10 +42,17 @@ public class UserController {
     }
 
     @PostMapping("/users")
+    public List<User> create(@RequestBody User user) {
+        System.out.println("FLAG0-- ");
+        return userStorage.findAll();
+    }
+    /*
     public User create(@RequestBody User user) throws ValidationException {
         System.out.println("FLAG0-- ");
         return userStorage.create(user);
     }
+    */
+
 
     @PutMapping(value = "/users")
     public User update(@RequestBody User user) throws ValidationException {

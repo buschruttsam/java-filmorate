@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+
     public Optional<User> findById(int userId, List<User> users) {
         return users.stream()
                 .filter(x -> x.getId() == userId)
