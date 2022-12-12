@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import kotlin.Pair;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.domain.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -17,7 +18,7 @@ public class UserService {
         if (optUser.isPresent()){
             return optUser.get();
         } else {
-            throw new UserNotFoundException("m:findById user not found");
+            throw new FilmNotFoundException("m:findById user not found");
         }
     }
 

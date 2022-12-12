@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,25 +14,34 @@ import java.util.stream.Collectors;
 @Component
 public class FilmService {
 
-    public Optional<Film> findById (int postId, List<Film> films) {
-        return films.stream()
-                .filter(x -> x.getId() == postId)
-                .findFirst();
-    }
-
-    public boolean addLike (int filmId, int userId, List<Film> films, HashMap<Integer, Set<Integer>> filmsLikes) {
-        if (films.stream().anyMatch(x -> x.getId() == filmId)){
-            filmsLikes.get(filmId).add(userId);
-            return true;
+    public Film findById (int postId, List<Film> films) {
+        Optional<Film> optFilm = films.stream().filter(x -> x.getId() == postId).findFirst();
+        if (optFilm.isPresent()){
+            return optFilm.get();
+        } else {
+            throw new UserNotFoundException("m:findById film not found");
         }
-        return false;
     }
 
-    public boolean removeLike (int filmId, int userId, HashMap<Integer, Set<Integer>> filmsLikes) {
+    public void addLike (int filmId, int userId, List<Film> films, HashMap<Integer, Set<Integer>> filmsLikes) {
+        System.out.println(filmId);
+        if (films.stream().anyMatch(x -> x.getId() == filmId)){
+            if (filmsLikes.containsKey(filmId)){
+                filmsLikes.get(filmId).add(userId);
+            } else {
+                filmsLikes.put(filmId, new HashSet<>(userId));
+            }
+        } else {
+            throw new UserNotFoundException("m:addLike film not found");
+        }
+    }
+
+    public void removeLike (int filmId, int userId, HashMap<Integer, Set<Integer>> filmsLikes) {
         if (filmsLikes.containsKey(filmId)){
             filmsLikes.get(filmId).remove(userId);
+        } else {
+            throw new UserNotFoundException("m:removeLike film not found");
         }
-        return true;
     }
 
     public List<Film> getFiltered0Films (int count, List<Film> films, HashMap<Integer, Set<Integer>> filmsLikes) {

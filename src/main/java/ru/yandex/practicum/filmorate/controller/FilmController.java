@@ -28,7 +28,7 @@ public class FilmController {
     }
 
     @GetMapping("/films/{id}")
-    public Optional<Film> findById(@PathVariable int id) {
+    public Film findById(@PathVariable int id) {
         return filmService.findById(id, filmStorage.getFilms());
     }
 
@@ -48,9 +48,8 @@ public class FilmController {
     }
 
     @PutMapping(value = "films/{id}/like/{userId}")
-    public Film addLike(@RequestBody Film film, @PathVariable int id, @PathVariable int userId) {
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
         filmService.addLike(id, userId, filmStorage.getFilms(), filmStorage.getFilmsLikes());
-        return film;
     }
 
     @DeleteMapping(value = "films/{id}/like/{userId}")

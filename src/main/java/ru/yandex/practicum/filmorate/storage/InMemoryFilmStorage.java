@@ -9,24 +9,23 @@ import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @Data
 public class InMemoryFilmStorage implements FilmStorage {
     private int FILM_ID = 0;
-    Set<Integer> filmIds;
+    Set<Integer> filmIds = new HashSet<>();
     HashMap<Integer, Set<Integer>> filmsLikes = new HashMap<>();
     private List<Film> films = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public Film create(Film film) throws ValidationException {
         filmValidation(film);
-        updateLastFilmId();
+        int filmId = updateLastFilmId();
+        film.setId(filmId);
         films.add(film);
+        filmIds.add(filmId);
         log.info("Film has been created, ID: {}", film.getId());
         return film;
     }
