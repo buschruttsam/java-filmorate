@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import javafx.util.*;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -8,13 +10,14 @@ import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+@Data
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private int USER_ID = 0;
+    Set<Integer> userIds;
+    Set<Pair<Integer, Integer>> friendPairs;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final List<User> users = new ArrayList<>();
 
@@ -26,8 +29,10 @@ public class InMemoryUserStorage implements UserStorage {
     public User create(User user) throws ValidationException {
         if (user.getName() == null || Objects.equals(user.getName(), "")){user.setName(user.getLogin());}
         userValidation(user);
-        user.setId(getLastUserId());
+        int userId = getLastUserId();
+        user.setId(userId);
         users.add(user);
+        userIds.add(userId);
         log.info("User has been created, ID: {}", user.getId());
         return user;
     }
@@ -58,7 +63,6 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.getBirthday().isAfter(LocalDate.now())){
             throw new ValidationException("User birth date is in future");
         }
-
     }
 
     public int getLastUserId() {

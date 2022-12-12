@@ -10,7 +10,7 @@ public interface UserStorage {
 
     List<User> findAll();
 
-    public User create(User user) throws ValidationException;
+    User create(User user) throws ValidationException;
 
     User update(User user) throws ValidationException;
 
