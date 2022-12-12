@@ -27,6 +27,16 @@ public class FilmController {
         return filmStorage.getFilms();
     }
 
+    @GetMapping("/films/{id}")
+    public Optional<Film> findById(@PathVariable int id) {
+        return filmService.findById(id, filmStorage.getFilms());
+    }
+
+    @GetMapping(value = "films/popular")
+    public List<Film> getFiltered0Films(@RequestParam(defaultValue = "10", required = false) int count) {
+        return filmService.getFiltered0Films(count, filmStorage.getFilms(), filmStorage.getFilmsLikes());
+    }
+
     @PostMapping(value = "/films")
     public Film create(@RequestBody Film film) throws ValidationException {
         return filmStorage.create(film);
@@ -37,9 +47,16 @@ public class FilmController {
         return filmStorage.update(film);
     }
 
-    @GetMapping("/films/{id}")
-    public Optional<Film> findById(@PathVariable int id) {
-        return filmService.findById(id, filmStorage.getFilms());
+    @PutMapping(value = "films/{id}/like/{userId}")
+    public Film addLike(@RequestBody Film film, @PathVariable int id, @PathVariable int userId) {
+        filmService.addLike(id, userId, filmStorage.getFilms(), filmStorage.getFilmsLikes());
+        return film;
+    }
+
+    @DeleteMapping(value = "films/{id}/like/{userId}")
+    public Film removeLike(@RequestBody Film film, @PathVariable int id, @PathVariable int userId) {
+        filmService.removeLike(id, userId, filmStorage.getFilmsLikes());
+        return film;
     }
 
 

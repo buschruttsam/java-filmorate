@@ -10,12 +10,16 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Data
 public class InMemoryFilmStorage implements FilmStorage {
     private int FILM_ID = 0;
+    Set<Integer> filmIds;
+    HashMap<Integer, Set<Integer>> filmsLikes = new HashMap<>();
     private List<Film> films = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 

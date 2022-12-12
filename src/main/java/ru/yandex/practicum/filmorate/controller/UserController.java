@@ -41,8 +41,9 @@ public class UserController {
         return userService.getCommonFriends(id, otherId, userStorage.getFriendPairs(), userStorage.getUsers());
     }
 
-    @PostMapping(value = "/users")
+    @PostMapping("/users")
     public User create(@RequestBody User user) throws ValidationException {
+        System.out.println("FLAG0-- ");
         return userStorage.create(user);
     }
 
