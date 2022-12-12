@@ -17,7 +17,7 @@ import java.util.*;
 public class InMemoryUserStorage implements UserStorage {
     private int USER_ID = 0;
     Set<Integer> userIds = new HashSet<>();
-    Set<Pair<Integer, Integer>> friendPairs;
+    Set<Pair<Integer, Integer>> friendPairs = new HashSet<>();
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final List<User> users = new ArrayList<>();
 

@@ -17,27 +17,25 @@ public class UserService {
         if (optUser.isPresent()){
             return optUser.get();
         } else {
-            throw new UserNotFoundException("findById user not found");
+            throw new UserNotFoundException("m:findById user not found");
         }
     }
 
-    public boolean addFriend (int id, int friendId, Set<Pair<Integer, Integer>> friendPairs, Set<Integer> userIds) {
+    public void addFriend (int id, int friendId, Set<Pair<Integer, Integer>> friendPairs, Set<Integer> userIds) {
         if (userIds.contains(id) && userIds.contains(friendId)) {
             friendPairs.add(new Pair<>(id, friendId));
             friendPairs.add(new Pair<>(friendId, id));
-            return true;
         } else {
-            return false;
+            throw new UserNotFoundException("m:addFriend user or friend not found");
         }
     }
 
-    public boolean removeFriend (int id, int friendId, Set<Pair<Integer, Integer>> friendPairs) {
+    public void removeFriend (int id, int friendId, Set<Pair<Integer, Integer>> friendPairs) {
         if (friendPairs.contains(new Pair<>(id, friendId))) {
             friendPairs.remove(new Pair<>(id, friendId));
             friendPairs.remove(new Pair<>(friendId, id));
-            return true;
         } else {
-            return false;
+            throw new UserNotFoundException("m:removeFriend friend not found");
         }
     }
 
@@ -59,7 +57,7 @@ public class UserService {
         List<User> commonFriends = new ArrayList<>();
         Set<Integer> userFriendIds = new HashSet<>();
         Set<Integer> otherFriendIds = new HashSet<>();
-        Set<Integer> commonFriendIds = new HashSet<>();
+        Set<Integer> commonFriendIds;
         for (Pair<Integer, Integer> friendPair : friendPairs){
             if (friendPair.getFirst() == id){
                 userFriendIds.add(friendPair.getSecond());
