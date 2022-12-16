@@ -5,6 +5,7 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Data
-@Component
+@Repository
 public class InMemoryUserStorage implements UserStorage {
     private int USER_ID = 0;
     Set<Integer> userIds = new HashSet<>();

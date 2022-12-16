@@ -16,7 +16,6 @@ public class FilmController {
     private final InMemoryFilmStorage filmStorage;
     private final FilmService filmService;
 
-    @Autowired
     public FilmController(FilmService filmService, InMemoryFilmStorage filmStorage) {
         this.filmService = filmService;
         this.filmStorage = filmStorage;
