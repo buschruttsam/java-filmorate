@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Service
-public class FilmService {
+public class FilmService implements FilmServiceInterface {
 
     public Film findById (int postId, List<Film> films) {
         Optional<Film> optFilm = films.stream().filter(x -> x.getId() == postId).findFirst();
