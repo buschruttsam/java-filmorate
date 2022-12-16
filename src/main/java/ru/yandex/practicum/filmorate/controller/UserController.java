@@ -1,72 +1,61 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Data;
-import org.slf4j.*;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 public class UserController {
-    private int USER_ID = 0;
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final InMemoryUserStorage userStorage;
+    private final UserService userService;
 
-    private final List<User> users = new ArrayList<>();
+    public UserController(InMemoryUserStorage userStorage, UserService userService) {
+        this.userStorage = userStorage;
+        this.userService = userService;
+    }
 
     @GetMapping("/users")
     public List<User> findAll() {
-        log.info("Current user amount is {}", users.size());
-        return users;
+        return userStorage.findAll();
     }
 
-    @PostMapping(value = "/users")
+    @GetMapping("/users/{id}")
+    public User findById(@PathVariable int id) {
+        return userService.findById(id, userStorage.findAll());
+    }
+
+    @GetMapping("/users/{id}/friends")
+    public List<User> getAllFriends(@PathVariable int id) {
+        return userService.getAllFriends(id, userStorage.getFriendPairs(), userStorage.getUsers());
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.getCommonFriends(id, otherId, userStorage.getFriendPairs(), userStorage.getUsers());
+    }
+
+    @PostMapping("/users")
     public User create(@RequestBody User user) throws ValidationException {
-        if (user.getName() == null || Objects.equals(user.getName(), "")){user.setName(user.getLogin());}
-        userValidation(user);
-        user.setId(getLastUserId());
-        users.add(user);
-        log.info("User has been created, ID: {}", user.getId());
-        return user;
+        return userStorage.create(user);
     }
 
     @PutMapping(value = "/users")
     public User update(@RequestBody User user) throws ValidationException {
-        if (user.getName() == null || Objects.equals(user.getName(), "")){user.setName(user.getLogin());}
-        userValidation(user);
-        for (User u : users){
-            if (u.getId() == user.getId()){
-                u.setName(user.getName());
-                u.setEmail(user.getEmail());
-                u.setLogin(user.getLogin());
-                u.setBirthday(user.getBirthday());
-                log.info("User has been updated, ID: {}", u.getId());
-                return user;
-            }
-        }
-        log.info("No user found, ID: {}", user.getId());
-        throw new ValidationException("User id not found");
+        return userStorage.update(user);
     }
 
-    // %%%%%%%%%% %%%%%%%%%% additional methods %%%%%%%%%% %%%%%%%%%%
-
-    private void userValidation(User user) throws ValidationException {
-        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
-            throw new ValidationException("User login is empty or has empty symbols");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())){
-            throw new ValidationException("User birth date is in future");
-        }
-
+    @PutMapping(value = "/users/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.addFriend(id, friendId, userStorage.getFriendPairs(), userStorage.getUserIds());
     }
 
-    private int getLastUserId() {
-        USER_ID += 1;
-        return USER_ID;
+    @DeleteMapping(value = "/users/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.removeFriend(id, friendId, userStorage.getFriendPairs());
     }
 
 }
