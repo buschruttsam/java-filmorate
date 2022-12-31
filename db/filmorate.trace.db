@@ -1638,3 +1638,9 @@ CREATE TABLE country ( id INTEGER NOT NULL AUTO_INCREMENT, name VARCHAR(128) NOT
 2022-12-29 23:57:31 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "COUNTRY" already exists; SQL statement:
 CREATE TABLE country ( id INTEGER NOT NULL AUTO_INCREMENT, name VARCHAR(128) NOT NULL, PRIMARY KEY (id) ) [42101-214]
+2022-12-30 23:00:56 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO genres (id, genre_name) VALUES (1, 'Comedy'), (2, 'Drama'), (3, 'Cartoon'), (4, 'Thriller'), (5, 'Documentary'), (6, 'Action') [*]ON CONFLICT (id) DO NOTHING"; SQL statement:
+INSERT INTO genres (id, genre_name) VALUES (1, 'Comedy'), (2, 'Drama'), (3, 'Cartoon'), (4, 'Thriller'), (5, 'Documentary'), (6, 'Action') ON CONFLICT (id) DO NOTHING [42000-214]
+2022-12-30 23:04:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO genres (id, genre_name) VALUES (1, 'Comedy'), (2, 'Drama'), (3, 'Cartoon'), (4, 'Thriller'), (5, 'Documentary'), (6, 'Action') [*]ON CONFLICT (id) DO NOTHING "; SQL statement:
+INSERT INTO genres (id, genre_name) VALUES (1, 'Comedy'), (2, 'Drama'), (3, 'Cartoon'), (4, 'Thriller'), (5, 'Documentary'), (6, 'Action') ON CONFLICT (id) DO NOTHING  [42000-214]
