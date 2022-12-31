@@ -1,2 +1,4 @@
-package ru.yandex.practicum.filmorate.service;public class FilmDbService {
+package ru.yandex.practicum.filmorate.service;
+
+public class FilmDbService {
 }
