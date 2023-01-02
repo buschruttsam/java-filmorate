@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.GenreResponse;
-import ru.yandex.practicum.filmorate.model.MpaResponse;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.FilmDBService;
 import ru.yandex.practicum.filmorate.storage.FilmDBStorage;
 
@@ -36,21 +34,21 @@ public class FilmController {
         return filmDBService.getFiltered0Films(count);
     }
 
-    @GetMapping("/films/genres")
-    public List<String> getAllGenres() {
+    @GetMapping("/genres")
+    public List<Genre> getAllGenres() {
         return filmDBService.getAllGenres();
     }
 
-    @GetMapping("/films/genres/{id}")
-    public GenreResponse getGenresById(@PathVariable int id) {
+    @GetMapping("/genres/{id}")
+    public Genre getGenresById(@PathVariable int id) {
         return filmDBService.getGenresById(id);
     }
 
-    @GetMapping("/films/mpa")
-    public List<String> getAllMpa() { return filmDBService.getAllMpa(); }
+    @GetMapping("/mpa")
+    public List<Mpa> getAllMpa() { return filmDBService.getAllMpa(); }
 
-    @GetMapping("/films/mpa/{id}")
-    public MpaResponse getMpaById(@PathVariable int id) { return filmDBService.getMpaById(id); }
+    @GetMapping("/mpa/{id}")
+    public Mpa getMpaById(@PathVariable int id) { return filmDBService.getMpaById(id); }
 
     @PostMapping(value = "/films")
     public Film create(@RequestBody Film film) throws ValidationException {

@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.GenreResponse;
-import ru.yandex.practicum.filmorate.model.MpaResponse;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.util.*;
 
@@ -14,13 +12,13 @@ public interface FilmService {
 
     List<Film> getFiltered0Films(int count);
 
-    List<String> getAllGenres();
+    List<Genre> getAllGenres();
 
-    GenreResponse getGenresById(int id);
+    Genre getGenresById(int id);
 
-    List<String> getAllMpa();
+    List<Mpa> getAllMpa();
 
-    MpaResponse getMpaById(int id);
+    Mpa getMpaById(int id);
 
     void addLike(int id, int userId);
 
