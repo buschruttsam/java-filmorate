@@ -1,60 +1,75 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.model.GenreResponse;
+import ru.yandex.practicum.filmorate.model.MpaResponse;
+import ru.yandex.practicum.filmorate.service.FilmDBService;
+import ru.yandex.practicum.filmorate.storage.FilmDBStorage;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class FilmController {
 
-    private final InMemoryFilmStorage filmStorage;
-    private final FilmService filmService;
+    private final FilmDBStorage filmDBStorage;
+    private final FilmDBService filmDBService;
 
-    public FilmController(FilmService filmService, InMemoryFilmStorage filmStorage) {
-        this.filmService = filmService;
-        this.filmStorage = filmStorage;
+    public FilmController(FilmDBStorage filmDBStorage, FilmDBService filmDBService) {
+        this.filmDBStorage = filmDBStorage;
+        this.filmDBService = filmDBService;
     }
 
     @GetMapping("/films")
     public List<Film> findAll() {
-        return filmStorage.getFilms();
+        return filmDBStorage.getFilms(filmDBService);
     }
 
     @GetMapping("/films/{id}")
-    public Film findById(@PathVariable int id) {
-        return filmService.findById(id, filmStorage.getFilms());
+    public Film findById(@PathVariable int id) throws ValidationException {
+        return filmDBService.findById(id);
     }
 
     @GetMapping(value = "films/popular")
     public List<Film> getFiltered0Films(@RequestParam(defaultValue = "10", required = false) int count) {
-        return filmService.getFiltered0Films(count, filmStorage.getFilms(), filmStorage.getFilmsLikes());
+        return filmDBService.getFiltered0Films(count);
     }
+
+    @GetMapping("/films/genres")
+    public List<String> getAllGenres() {
+        return filmDBService.getAllGenres();
+    }
+
+    @GetMapping("/films/genres/{id}")
+    public GenreResponse getGenresById(@PathVariable int id) {
+        return filmDBService.getGenresById(id);
+    }
+
+    @GetMapping("/films/mpa")
+    public List<String> getAllMpa() { return filmDBService.getAllMpa(); }
+
+    @GetMapping("/films/mpa/{id}")
+    public MpaResponse getMpaById(@PathVariable int id) { return filmDBService.getMpaById(id); }
 
     @PostMapping(value = "/films")
     public Film create(@RequestBody Film film) throws ValidationException {
-        return filmStorage.create(film);
+        return filmDBStorage.create(film);
     }
 
     @PutMapping(value = "/films")
     public Film update(@RequestBody Film film) throws ValidationException {
-        return filmStorage.update(film);
+        return filmDBStorage.update(film);
     }
 
     @PutMapping(value = "films/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
-        filmService.addLike(id, userId, filmStorage.getFilms(), filmStorage.getFilmsLikes());
+        filmDBService.addLike(id, userId);
     }
 
     @DeleteMapping(value = "films/{id}/like/{userId}")
     public void removeLike(@PathVariable int id, @PathVariable int userId) {
-        filmService.removeLike(id, userId, filmStorage.getFilmsLikes());
+        filmDBService.removeLike(id, userId);
     }
-
 
 }

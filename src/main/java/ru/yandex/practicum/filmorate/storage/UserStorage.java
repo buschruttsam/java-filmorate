@@ -14,7 +14,4 @@ public interface UserStorage {
 
     User update(User user) throws ValidationException;
 
-    void userValidation(User user) throws ValidationException;
-
-    int getLastUserId();
 }
