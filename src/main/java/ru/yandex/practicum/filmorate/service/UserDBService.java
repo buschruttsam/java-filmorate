@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.domain.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserDBStorage;
@@ -26,7 +25,7 @@ public class UserDBService implements UserService {
         if (optUser.isPresent()){
             return optUser.get();
         } else {
-            throw new FilmNotFoundException("m:findById user not found");
+            throw new UserNotFoundException("m:findById user not found");
         }
     }
 
@@ -58,7 +57,7 @@ public class UserDBService implements UserService {
     }
 
     public List<User> getCommonFriends (int id, int friendId, UserDBStorage userDBStorage) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = ?) AND (SELECT user_id FROM user_friends WHERE friend_id = ?)",
+        return jdbcTemplate.query("SELECT * FROM users WHERE id IN (SELECT friend_id FROM (SELECT * FROM user_friends WHERE user_id = ?) WHERE user_id =?)",
                 (resultSet, rowNumber) -> userDBStorage.getUser(resultSet), id, friendId);
     }
 

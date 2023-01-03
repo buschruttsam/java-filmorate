@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -50,6 +51,7 @@ public class UserDBStorage implements UserStorage {
     public User update(User user) throws ValidationException {
         if (user.getName() == null || Objects.equals(user.getName(), "")){user.setName(user.getLogin());}
         userValidation(user);
+        System.out.println(user.getId());
         SqlRowSet userSet = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", user.getId());
         if(userSet.next()) {
             String sql = "MERGE INTO users (id, login, name, email, birthday) VALUES (?, ?, ?, ?, ?)";
@@ -57,7 +59,7 @@ public class UserDBStorage implements UserStorage {
             log.info("User has been updated, ID: {}", user.getId());
             return user;
         } else {
-            throw new ValidationException("User id not found");
+            throw new UserNotFoundException("User id not found");
         }
     }
 

@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.ResultSet;
@@ -23,7 +22,7 @@ public class FilmDBService implements FilmService {
     }
 
     @Override
-    public Film findById(int id) throws ValidationException {
+    public Film findById(int id) throws UserNotFoundException {
         SqlRowSet filmSet = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE id = ?", id);
         if(filmSet.next()){
             Film film = getFilm(filmSet);
@@ -31,7 +30,7 @@ public class FilmDBService implements FilmService {
                     (resultSet, rowNumber) -> getGenre(resultSet), film.getId()));
             return film;
         } else {
-            throw new ValidationException("Film not found");
+            throw new UserNotFoundException("Film not found");
         }
     }
 
@@ -123,23 +122,8 @@ public class FilmDBService implements FilmService {
         return userSet.next();
     }
 
-    public Film getFilm(ResultSet resultSet) throws SQLException {
-        Film film = new Film();
-        film.setId(resultSet.getInt("id"));
-        film.setName(resultSet.getString("name"));
-        film.setDescription(resultSet.getString("description"));
-        film.setReleaseDate(resultSet.getDate("release_date").toLocalDate());
-        film.setDuration(resultSet.getInt("duration"));
-        Mpa mpa = new Mpa();
-        mpa.setId(resultSet.getInt("mpa_rating_id"));
-        film.setMpa(mpa);
-        return film;
-    }
-
     public Genre getGenre(ResultSet resultSet) throws SQLException {
-        Genre genre = new Genre();
-        genre.setId(resultSet.getInt("genre_id"));
-        return genre;
+        return getGenresById(resultSet.getInt("genre_id"));
     }
 
     public Genre getRawGenre(ResultSet resultSet) throws SQLException {
@@ -156,6 +140,17 @@ public class FilmDBService implements FilmService {
         return mpa;
     }
 
+    public Film getFilm(ResultSet resultSet) throws SQLException {
+        Film film = new Film();
+        film.setId(resultSet.getInt("id"));
+        film.setName(resultSet.getString("name"));
+        film.setDescription(resultSet.getString("description"));
+        film.setReleaseDate(resultSet.getDate("release_date").toLocalDate());
+        film.setDuration(resultSet.getInt("duration"));
+        film.setMpa(getMpaById(resultSet.getInt("mpa_rating_id")));
+        return film;
+    }
+
     public Film getFilm(SqlRowSet filmSet) {
         Film film = new Film();
         film.setId(filmSet.getInt("id"));
@@ -163,9 +158,7 @@ public class FilmDBService implements FilmService {
         film.setDescription(filmSet.getString("description"));
         film.setReleaseDate(Objects.requireNonNull(filmSet.getDate("release_date")).toLocalDate());
         film.setDuration(filmSet.getInt("duration"));
-        Mpa mpa0 = new Mpa();
-        mpa0.setId(filmSet.getInt("mpa_rating_id"));
-        film.setMpa(mpa0);
+        film.setMpa(getMpaById(filmSet.getInt("mpa_rating_id")));
         return film;
     }
 

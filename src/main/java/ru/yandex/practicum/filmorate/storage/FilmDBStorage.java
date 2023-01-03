@@ -2,10 +2,12 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -26,11 +28,11 @@ public class FilmDBStorage implements FilmStorage {
     }
 
     public List<Film> getFilms(FilmDBService filmDBService) {
-        List<Film> films = jdbcTemplate.query("SELECT * FROM films",
-                (resultSet, rowNumber) -> filmDBService.getFilm(resultSet));
+        List<Film> films = jdbcTemplate.query("SELECT * FROM films", (resultSet, rowNumber) -> filmDBService.getFilm(resultSet));
         for (Film film : films){
-            film.setGenres(jdbcTemplate.query("SELECT * FROM film_genres WHERE film_id =?",
-                    (resultSet, rowNumber) -> filmDBService.getGenre(resultSet), film.getId()));
+            film.setGenres(jdbcTemplate.query("SELECT * FROM film_genres WHERE film_id =?", (resultSet, rowNumber) -> filmDBService.getGenre(resultSet), film.getId()));
+
+
         }
         log.info("Current film amount is {}", films.size());
         return films;
@@ -38,15 +40,13 @@ public class FilmDBStorage implements FilmStorage {
 
     public Film create(Film film) throws ValidationException {
         filmValidation(film);
-        jdbcTemplate.update("INSERT INTO films (name, description, release_date, duration, mpa_rating_id) VALUES (?, ?, ?, ?, ?)",
-                film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
+        jdbcTemplate.update("INSERT INTO films (name, description, release_date, duration, mpa_rating_id) VALUES (?, ?, ?, ?, ?)", film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         SqlRowSet filmSet = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE name = ? AND release_date = ?", film.getName(), film.getReleaseDate());
         if(filmSet.next()){
             film.setId(filmSet.getInt("id"));
             if (film.getGenres() != null){
                 for (Genre genre : film.getGenres()){
-                    jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)",
-                            film.getId(), genre.getId());
+                    jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)", film.getId(), genre.getId());
                 }
             }
             log.info("Film has been created, ID: {}", film.getId());
@@ -67,15 +67,21 @@ public class FilmDBStorage implements FilmStorage {
             jdbcTemplate.update(sql, film.getId(), film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
             jdbcTemplate.update("DELETE FROM film_genres WHERE film_id = ?", film.getId());
             if (film.getGenres() != null){
+                List<Genre> newGenres = new ArrayList<>();
                 for (Genre genre : film.getGenres()){
-                    jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)",
-                            film.getId(), genre.getId());
+                    if (!newGenres.contains(genre)){
+                        newGenres.add(genre);
+                    }
                 }
+                for (Genre genre : newGenres){
+                    jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)", film.getId(), genre.getId());
+                }
+                film.setGenres(newGenres);
             }
             log.info("Film has been updated, ID: {}", film.getId());
             return film;
         } else {
-            throw new ValidationException("Film not found");
+            throw new UserNotFoundException("Film not found");
         }
     }
 
