@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
-
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.FilmDBService;
 import ru.yandex.practicum.filmorate.storage.FilmDBStorage;
-
 import java.util.List;
 
 @RestController
@@ -24,20 +22,11 @@ public class FilmController {
         return filmDBStorage.getFilms(filmDBService);
     }
 
-    @GetMapping("/likes")
-    public List<FilmToLike> getLikesTable() {
-        return filmDBService.getLikesTable();
-    }
-
     @GetMapping("/films/{id}")
-    public Film findById(@PathVariable int id) throws ValidationException {
-        return filmDBService.findById(id);
-    }
+    public Film findById(@PathVariable int id) { return filmDBService.findById(id); }
 
     @GetMapping(value = "films/popular")
-    public List<Film> getFiltered0Films(@RequestParam(defaultValue = "10", required = false) int count) {
-        return filmDBService.getFiltered0Films(count);
-    }
+    public List<Film> getFiltered0Films(@RequestParam(defaultValue = "10", required = false) int count) { return filmDBService.getFiltered0Films(count); }
 
     @GetMapping("/genres")
     public List<Genre> getAllGenres() {
@@ -56,14 +45,10 @@ public class FilmController {
     public Mpa getMpaById(@PathVariable int id) { return filmDBService.getMpaById(id); }
 
     @PostMapping(value = "/films")
-    public Film create(@RequestBody Film film) throws ValidationException {
-        return filmDBStorage.create(film);
-    }
+    public Film create(@RequestBody Film film) throws ValidationException { return filmDBStorage.create(film); }
 
     @PutMapping(value = "/films")
-    public Film update(@RequestBody Film film) throws ValidationException {
-        return filmDBStorage.update(film);
-    }
+    public Film update(@RequestBody Film film) throws ValidationException { return filmDBStorage.update(film); }
 
     @PutMapping(value = "films/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {

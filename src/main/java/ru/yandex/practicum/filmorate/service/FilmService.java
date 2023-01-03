@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
-
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
-
 import java.util.*;
 
 public interface FilmService {

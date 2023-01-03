@@ -1,5 +1,4 @@
 package ru.yandex.practicum.filmorate.storage;
-
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,12 +9,9 @@ import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserDBService;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 @Data
 @Repository
