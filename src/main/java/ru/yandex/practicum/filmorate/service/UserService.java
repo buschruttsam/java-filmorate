@@ -7,7 +7,7 @@ import java.util.*;
 
 public interface UserService {
 
-    User findById(int userId, List<User> users);
+    User findById(int userId);
 
     void addFriend (int id, int friendId);
 

@@ -20,7 +20,7 @@ public class UserController {
     public List<User> findAll() { return userDBStorage.findAll(userDBService); }
 
     @GetMapping("/users/{id}")
-    public User findById(@PathVariable int id) { return userDBService.findById(id, userDBStorage.findAll(userDBService)); }
+    public User findById(@PathVariable int id) { return userDBService.findById(id); }
 
     @GetMapping("/users/{id}/friends")
     public List<User> getAllFriends(@PathVariable int id) {

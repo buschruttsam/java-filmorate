@@ -22,10 +22,10 @@ public class UserDBService implements UserService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public User findById(int userId, List<User> users) {
-        Optional<User> optUser = users.stream().filter(x -> x.getId() == userId).findFirst();
-        if (optUser.isPresent()){
-            return optUser.get();
+    public User findById(int userId) {
+        SqlRowSet userSet = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", userId);
+        if (userSet.next()){
+            return getUserFromRow (userSet);
         } else {
             throw new UserNotFoundException("m:findById user not found");
         }
@@ -64,7 +64,15 @@ public class UserDBService implements UserService {
         return userSet.next();
     }
 
-    // %%%%%%%%%% %%%%%%%%%% supporting methods %%%%%%%%%% %%%%%%%%%%
+    public User getUserFromRow (SqlRowSet userSet) {
+        User user = new User();
+        user.setId(userSet.getInt("id"));
+        user.setLogin(userSet.getString("login"));
+        user.setName(userSet.getString("name"));
+        user.setEmail(userSet.getString("email"));
+        user.setBirthday(Objects.requireNonNull(userSet.getDate("birthday")).toLocalDate());
+        return user;
+    }
 
     public User getUser(ResultSet resultSet) throws SQLException {
         User user = new User();
