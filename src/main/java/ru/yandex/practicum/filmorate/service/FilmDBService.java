@@ -21,13 +21,25 @@ public class FilmDBService implements FilmService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public List<FilmToLike> getLikesTable(){
+        List<FilmToLike> table_ = jdbcTemplate.query("SELECT * FROM film_likes", (resultSet, rowNumber) -> getRow(resultSet));
+        return table_;
+    }
+
+    FilmToLike getRow(ResultSet resultSet) throws SQLException {
+        FilmToLike ftl = new FilmToLike();
+        ftl.setFilm_id(resultSet.getInt("film_id"));
+        ftl.setFilm_likes(resultSet.getInt("user_id"));
+        return ftl;
+    }
+
+
     @Override
     public Film findById(int id) throws UserNotFoundException {
         SqlRowSet filmSet = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE id = ?", id);
         if(filmSet.next()){
             Film film = getFilm(filmSet);
-            film.setGenres(jdbcTemplate.query("SELECT * FROM film_genres WHERE film_id =?",
-                    (resultSet, rowNumber) -> getGenre(resultSet), film.getId()));
+            film.setGenres(jdbcTemplate.query("SELECT * FROM film_genres WHERE film_id =?", (resultSet, rowNumber) -> getGenre(resultSet), film.getId()));
             return film;
         } else {
             throw new UserNotFoundException("Film not found");
@@ -36,14 +48,13 @@ public class FilmDBService implements FilmService {
 
     @Override
     public List<Film> getFiltered0Films(int limit) {
-        String sql = "SELECT film_id, COUNT(user_id) AS likes FROM film_likes " +
-                "LEFT JOIN films ON films.id = film_likes.film_id " +
-                "GROUP BY film_id ORDER BY likes DESC LIMIT ?";
-        List<Film> films = jdbcTemplate.query(sql,
-                (resultSet, rowNumber) -> getFilm(resultSet), limit);
+        System.out.println("FLAG-- limit-- " + limit);
+        getLikesTable();
+        System.out.println("FLAG-- table_size-- " + getLikesTable().size());
+        String sql = "SELECT film_id, COUNT(user_id) AS likes FROM film_likes LEFT JOIN films ON films.id = film_likes.film_id GROUP BY film_id ORDER BY likes DESC LIMIT ?";
+        List<Film> films = jdbcTemplate.query(sql, (resultSet, rowNumber) -> getFilmById(resultSet), limit);
         for (Film film : films){
-            film.setGenres(jdbcTemplate.query("SELECT * FROM film_genres WHERE film_id =?",
-                    (resultSet, rowNumber) -> getGenre(resultSet), film.getId()));
+            film.setGenres(jdbcTemplate.query("SELECT * FROM film_genres WHERE film_id =?", (resultSet, rowNumber) -> getGenre(resultSet), film.getId()));
         }
         return films;
     }
@@ -138,6 +149,12 @@ public class FilmDBService implements FilmService {
         mpa.setId(resultSet.getInt("id"));
         mpa.setName(resultSet.getString("rating_name"));
         return mpa;
+    }
+
+    public Film getFilmById(ResultSet resultSet) throws SQLException {
+        System.out.println("FLAG03-- ");
+        System.out.println("FLAG-- film_id-- " + resultSet.getInt("film_id"));
+        return findById(resultSet.getInt("film_id"));
     }
 
     public Film getFilm(ResultSet resultSet) throws SQLException {

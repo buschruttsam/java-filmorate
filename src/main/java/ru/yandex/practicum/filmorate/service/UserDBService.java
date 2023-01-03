@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserDBStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Data
@@ -31,11 +33,9 @@ public class UserDBService implements UserService {
 
     public void addFriend (int id, int friendId) {
         if (checkIfUserIdExist(id) && checkIfUserIdExist(friendId)){
-            SqlRowSet userSet = jdbcTemplate.queryForRowSet("SELECT * FROM user_friends WHERE user_id = ? AND friend_id = ?",
-                    id, friendId);
+            SqlRowSet userSet = jdbcTemplate.queryForRowSet("SELECT * FROM user_friends WHERE user_id = ? AND friend_id = ?", id, friendId);
             if (!userSet.next()){
-                jdbcTemplate.update("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?)",
-                        id, friendId);
+                jdbcTemplate.update("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?)", id, friendId);
             }
         } else {
             throw new UserNotFoundException("m:addFriend user or friend not found");
@@ -43,22 +43,19 @@ public class UserDBService implements UserService {
     }
 
     public void removeFriend (int id, int friendId) {
-        SqlRowSet userSet = jdbcTemplate.queryForRowSet("SELECT * FROM user_friends WHERE user_id = ? AND friend_id = ?",
-                id, friendId);
+        SqlRowSet userSet = jdbcTemplate.queryForRowSet("SELECT * FROM user_friends WHERE user_id = ? AND friend_id = ?", id, friendId);
         if (userSet.next()){
-            jdbcTemplate.update("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?",
-                    id, friendId);
+            jdbcTemplate.update("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?", id, friendId);
         }
     }
 
     public List<User> getAllFriends (int id, UserDBStorage userDBStorage) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = ?)",
-                (resultSet, rowNumber) -> userDBStorage.getUser(resultSet), id);
+        return jdbcTemplate.query("SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = ?)", (resultSet, rowNumber) -> getUser(resultSet), id);
     }
 
     public List<User> getCommonFriends (int id, int friendId, UserDBStorage userDBStorage) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE id IN (SELECT friend_id FROM (SELECT * FROM user_friends WHERE user_id = ?) WHERE user_id =?)",
-                (resultSet, rowNumber) -> userDBStorage.getUser(resultSet), id, friendId);
+        String sql = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM (SELECT friend_id FROM user_friends WHERE user_id =?) WHERE friend_id IN (SELECT friend_id FROM user_friends WHERE user_id = ?))";
+        return jdbcTemplate.query(sql, (resultSet, rowNumber) -> getUser(resultSet), id, friendId);
     }
 
     // %%%%%%%%%% %%%%%%%%%% supporting methods %%%%%%%%%% %%%%%%%%%%
@@ -67,5 +64,16 @@ public class UserDBService implements UserService {
         return userSet.next();
     }
 
+    // %%%%%%%%%% %%%%%%%%%% supporting methods %%%%%%%%%% %%%%%%%%%%
+
+    public User getUser(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setId(resultSet.getInt("id"));
+        user.setLogin(resultSet.getString("login"));
+        user.setName(resultSet.getString("name"));
+        user.setEmail(resultSet.getString("email"));
+        user.setBirthday(resultSet.getDate("birthday").toLocalDate());
+        return user;
+    }
 
 }

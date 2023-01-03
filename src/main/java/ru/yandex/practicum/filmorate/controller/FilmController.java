@@ -24,6 +24,11 @@ public class FilmController {
         return filmDBStorage.getFilms(filmDBService);
     }
 
+    @GetMapping("/likes")
+    public List<FilmToLike> getLikesTable() {
+        return filmDBService.getLikesTable();
+    }
+
     @GetMapping("/films/{id}")
     public Film findById(@PathVariable int id) throws ValidationException {
         return filmDBService.findById(id);

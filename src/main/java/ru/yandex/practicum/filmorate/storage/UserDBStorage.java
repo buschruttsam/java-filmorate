@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.domain.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.domain.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserDBService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,9 +29,8 @@ public class UserDBStorage implements UserStorage {
     }
 
     @Override
-    public List<User> findAll() {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users",
-                (resultSet, rowNumber) -> getUser(resultSet));
+    public List<User> findAll(UserDBService userDBService) {
+        List<User> users = jdbcTemplate.query("SELECT * FROM users", (resultSet, rowNumber) -> userDBService.getUser(resultSet));
         log.info("Current user amount is {}", users.size());
         return users;
     }
@@ -64,16 +64,6 @@ public class UserDBStorage implements UserStorage {
     }
 
     // %%%%%%%%%% %%%%%%%%%% supporting methods %%%%%%%%%% %%%%%%%%%%
-
-    public User getUser(ResultSet resultSet) throws SQLException {
-        User user = new User();
-        user.setId(resultSet.getInt("id"));
-        user.setLogin(resultSet.getString("login"));
-        user.setName(resultSet.getString("name"));
-        user.setEmail(resultSet.getString("email"));
-        user.setBirthday(resultSet.getDate("birthday").toLocalDate());
-        return user;
-    }
 
     public void userValidation(User user) throws ValidationException {
         if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {

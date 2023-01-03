@@ -19,11 +19,11 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> findAll() { return userDBStorage.findAll(); }
+    public List<User> findAll() { return userDBStorage.findAll(userDBService); }
 
     @GetMapping("/users/{id}")
     public User findById(@PathVariable int id) {
-        return userDBService.findById(id, userDBStorage.findAll());
+        return userDBService.findById(id, userDBStorage.findAll(userDBService));
     }
 
     @GetMapping("/users/{id}/friends")
