@@ -1,15 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 import lombok.*;
+import lombok.experimental.PackagePrivate;
 
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
 
 @Data
+@PackagePrivate
 public class User {
-    private int id;
-    private String login;
-    private String name;
+    int id;
+    String login;
+    String name;
     @Email
-    private String email;
-    private LocalDate birthday;
+    String email;
+    LocalDate birthday;
 }

@@ -10,38 +10,45 @@ import java.util.List;
 public class UserController {
     private final UserDBStorage userDBStorage;
     private final UserDBService userDBService;
+    // endpoints
+    private final String ep_users = "/users";
+    private final String ep_findUserById = "/users/{id}";
+    private final String ep_findAllUserFriends = "/users/{id}/friends";
+    private final String ep_findUserCommonFriends = "/users/{id}/friends/common/{otherId}";
+    private final String ep_userFriend = "/users/{id}/friends/{friendId}";
+
 
     public UserController(UserDBService userDBService, UserDBStorage userDBStorage) {
         this.userDBService = userDBService;
         this.userDBStorage = userDBStorage;
     }
 
-    @GetMapping("/users")
+    @GetMapping(ep_users)
     public List<User> findAll() { return userDBStorage.findAll(userDBService); }
 
-    @GetMapping("/users/{id}")
+    @GetMapping(ep_findUserById)
     public User findById(@PathVariable int id) { return userDBService.findById(id); }
 
-    @GetMapping("/users/{id}/friends")
+    @GetMapping(ep_findAllUserFriends)
     public List<User> getAllFriends(@PathVariable int id) {
         return userDBService.getAllFriends(id, userDBStorage);
     }
 
-    @GetMapping("/users/{id}/friends/common/{otherId}")
+    @GetMapping(ep_findUserCommonFriends)
     public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) { return userDBService.getCommonFriends(id, otherId, userDBStorage); }
 
-    @PostMapping("/users")
+    @PostMapping(ep_users)
     public User create(@RequestBody User user) throws ValidationException { return userDBStorage.create(user); }
 
-    @PutMapping(value = "/users")
+    @PutMapping(value = ep_users)
     public User update(@RequestBody User user) throws ValidationException { return userDBStorage.update(user); }
 
-    @PutMapping(value = "/users/{id}/friends/{friendId}")
+    @PutMapping(value = ep_userFriend)
     public void addFriend(@PathVariable int id, @PathVariable int friendId) {
         userDBService.addFriend(id, friendId);
     }
 
-    @DeleteMapping(value = "/users/{id}/friends/{friendId}")
+    @DeleteMapping(value = ep_userFriend)
     public void removeFriend(@PathVariable int id, @PathVariable int friendId) { userDBService.removeFriend(id, friendId); }
 
 }

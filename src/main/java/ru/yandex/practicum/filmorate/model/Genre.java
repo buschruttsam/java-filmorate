@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.experimental.PackagePrivate;
 
 @Data
+@PackagePrivate
 public class Genre {
-    private Integer id;
-    private String name;
+    Integer id;
+    String name;
 }
